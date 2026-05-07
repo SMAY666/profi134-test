@@ -1,8 +1,9 @@
 import { Body, Controller, Inject, Logger, Post } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { PayloadDto, RabbitEventDto } from '../../../libs/interfaces';
+import { PayloadDto, RabbitEventDto } from '../../../libs/dto';
 import { v4 as uuidv4 } from 'uuid';
 import { firstValueFrom, retry } from 'rxjs';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
@@ -10,6 +11,8 @@ export class AppController {
   private readonly logger = new Logger(this.constructor.name);
 
   @Post('event')
+  @ApiOperation({ summary: 'Send data' })
+  @ApiResponse({ status: 200, description: 'Message successfully sent' })
   async sendData(@Body() payload: PayloadDto) {
     const event: RabbitEventDto = {
       id: uuidv4(),

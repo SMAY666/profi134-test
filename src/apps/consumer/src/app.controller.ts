@@ -1,6 +1,6 @@
 import { Controller, Inject, Logger } from '@nestjs/common';
 import { ClientProxy, EventPattern } from '@nestjs/microservices';
-import { RabbitEventDto } from '../../../libs/interfaces';
+import { RabbitEventDto } from '../../../libs/dto';
 import { firstValueFrom, retry } from 'rxjs';
 
 @Controller()
@@ -14,12 +14,17 @@ export class AppController {
     if (event.type === 'notification') {
       try {
         await firstValueFrom(
-          this.client.emit('notification', { ...event.payload }).pipe(
-            retry({
-              count: 3,
-              delay: 1000,
-            }),
-          ),
+          this.client
+            .emit('notification', {
+              ...event.payload,
+              createdAt: event.createdAt,
+            })
+            .pipe(
+              retry({
+                count: 3,
+                delay: 1000,
+              }),
+            ),
         );
       } catch (err) {
         this.logger.error(err);
