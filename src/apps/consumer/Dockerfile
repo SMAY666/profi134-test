@@ -1,13 +1,14 @@
 FROM node
 
 WORKDIR /app
+RUN npm install -g yarn
 
 COPY package.json ./
 COPY yarn.lock ./
 
-RUN npm install
+RUN yarn install
 
 COPY . .
 
-RUN npm run build
+RUN yarn build
 CMD ["node", "dist/apps/consumer/main.js"]
